@@ -1,5 +1,5 @@
 import "dotenv/config";
-import {createAccount, createMint} from '@solana/spl-token'
+import {createAccount, createMint, getOrCreateAssociatedTokenAccount} from '@solana/spl-token'
 import { clusterApiUrl, Connection } from '@solana/web3.js';
 import { getKeypairFromEnvironment } from "@solana-developers/helpers";
 
@@ -17,8 +17,14 @@ async function main() {
     // const tokenMintAddress = await createMint(connection,payer,payer.publicKey,payer.publicKey,9,tokenKeyPair);
     // console.log(tokenMintAddress.toBase58())
 
-    const tokenAccount = await createAccount(connection,payer,tokenKeyPair.publicKey,payer.publicKey,tokenAccountKeypair)
-    console.log(tokenAccount.toBase58())
+    // const tokenAccount = await createAccount(connection,payer,tokenKeyPair.publicKey,payer.publicKey)
+    // // if we didn't provide key pair to token account then it becomes associate token account 
+    // console.log(tokenAccount.toBase58())
+
+    const ata = await getOrCreateAssociatedTokenAccount(connection,payer,tokenKeyPair.publicKey,payer.publicKey);
+    console.log(ata.address.toBase58())
+
+    //Under the hood this function is checking firstly either the associated token account is created if not then it is creating it
 }
 
 main();
