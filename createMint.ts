@@ -1,5 +1,5 @@
 import "dotenv/config";
-import {mintTo, getOrCreateAssociatedTokenAccount, getAssociatedTokenAddress, transfer} from '@solana/spl-token'
+import {mintTo, getOrCreateAssociatedTokenAccount, getAssociatedTokenAddress, transfer, burn} from '@solana/spl-token'
 import { clusterApiUrl, Connection } from '@solana/web3.js';
 import { getKeypairFromEnvironment } from "@solana-developers/helpers";
 
@@ -15,6 +15,7 @@ async function main() {
     const mint = tokenKeyPair.publicKey
     const decimal = 9
     const ta = tokenAccountKeypair.publicKey
+
     // used to create token mint address
     // const tokenMintAddress = await createMint(connection,payer,payer.publicKey,payer.publicKey,9,tokenKeyPair);
     // console.log(tokenMintAddress.toBase58())
@@ -29,14 +30,17 @@ async function main() {
     //Under the hood this function is checking firstly either the associated token account is created if not then it is creating it
 
     const ata = await getAssociatedTokenAddress(mint,payer.publicKey)
-    console.log(ata)
+    console.log(ata.toBase58())
     // const amount = 3*10**decimal
     // const sigx = await mintTo(connection,payer,mint,ata,payer.publicKey,amount)
     // console.log(sigx)
 
-    const sigx = await transfer(connection,payer,ata,ta,payer.publicKey,1)
-    console.log(sigx)
+    // const sigx = await transfer(connection,payer,ata,ta,payer.publicKey,1)
+    // console.log(sigx)
+    const amountToBurn = 1*10**decimal-1
 
+    const sigx = await burn(connection,payer,ata,mint,payer.publicKey,amountToBurn)
+    console.log(sigx)
 }
 
 main();
